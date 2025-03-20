@@ -1,0 +1,37 @@
+services:
+  mongo-1:
+    image: mongo:4.4.17
+    container_name: mongo-1
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=abc123!
+    volumes:
+      - mongo-data:/data/db
+    ports:
+      - "27017:27017"
+    networks:
+      - mongo-net
+    privileged: true
+
+
+  express:
+    build:
+      context: ./express-app
+      dockerfile: /home/dev/Downloads/dba/nonrel/mongo/Dockerfile  
+    container_name: express-app
+    environment:
+      - MONGO_URI=mongodb://root:abc123!@mongo-1:27017
+    ports:
+      - "28203:28203"
+    networks:
+      - mongo-net
+    depends_on:
+      - mongo-1
+
+volumes:
+  mongo-data:
+
+networks:
+  mongo-net:
+    driver: bridge
+    
